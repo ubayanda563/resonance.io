@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Search, Menu, Heart, MoreVertical, ArrowLeft, Shuffle, Repeat } from 'lucide-react';
-import { mockLibraryData, mockRecentlyAdded } from '../data/mockData';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Search, Menu, Heart, MoreVertical, ArrowLeft, Shuffle, Repeat, Upload, Plus } from 'lucide-react';
+import { trackAPI, handleApiError } from '../services/api';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import FileUploadDialog from './FileUploadDialog';
+import YouTubeSearch from './YouTubeSearch';
+import Toaster from './Toaster';
+import { useToast } from '../hooks/use-toast';
+import { mockLibraryData } from '../data/mockData';
 
 const ResonanceApp = () => {
   const [currentView, setCurrentView] = useState('library');
