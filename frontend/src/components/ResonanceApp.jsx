@@ -382,6 +382,23 @@ const ResonanceApp = () => {
 
       {/* Full Player Overlay */}
       {isFullPlayer && currentTrack && <FullPlayerView />}
+
+      {/* Upload Dialog */}
+      <FileUploadDialog
+        isOpen={showUploadDialog}
+        onClose={() => setShowUploadDialog(false)}
+        onUploadComplete={handleUploadComplete}
+      />
+
+      {/* YouTube Search Dialog */}
+      <YouTubeSearch
+        isOpen={showYouTubeSearch}
+        onClose={() => setShowYouTubeSearch(false)}
+        onTrackSelect={handleYouTubeTrackSelect}
+      />
+
+      {/* Toast Notifications */}
+      <Toaster />
     </div>
   );
 };
