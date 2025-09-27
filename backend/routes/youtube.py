@@ -79,12 +79,12 @@ async def add_youtube_track(
         
         # Create track document
         track_data = {
-            "title": track_info["title"],
-            "artist": track_info["artist"],
-            "duration": track_info["duration"],
+            "title": track_info.title,
+            "artist": track_info.artist,
+            "duration": track_info.duration,
             "youtube_id": youtube_id,
-            "youtube_url": track_info["url"],
-            "artwork_url": track_info["thumbnail"],
+            "youtube_url": track_info.url,
+            "artwork_url": track_info.thumbnail,
             "source": "youtube",
             "upload_date": datetime.utcnow(),
             "play_count": 0
