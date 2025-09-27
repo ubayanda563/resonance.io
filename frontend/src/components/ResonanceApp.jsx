@@ -141,7 +141,16 @@ const ResonanceApp = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {mockRecentlyAdded.map((track, idx) => (
+        {isLoading ? (
+          Array.from({ length: 9 }).map((_, idx) => (
+            <div key={idx} className="animate-pulse">
+              <div className="aspect-square bg-gray-700 rounded-lg mb-3"></div>
+              <div className="h-4 bg-gray-700 rounded mb-1"></div>
+              <div className="h-3 bg-gray-700 rounded w-3/4"></div>
+            </div>
+          ))
+        ) : recentTracks.length > 0 ? (
+          recentTracks.map((track, idx) => (
           <div 
             key={idx} 
             className="cursor-pointer hover:scale-105 transition-transform duration-200"
