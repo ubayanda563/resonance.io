@@ -40,13 +40,41 @@ const ResonanceApp = () => {
       .catch(() => setGithubAvatar('https://github.com/Moodstlbn.png'));
   }, []);
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
+  // Load recent tracks
+  useEffect(() => {
+    loadRecentTracks();
+  }, []);
+
+  const loadRecentTracks = async () => {
+    setIsLoading(true);
+    try {
+      const tracks = await trackAPI.getRecentTracks(9);
+      setRecentTracks(tracks);
+    } catch (error) {
+      const errorInfo = handleApiError(error);
+      toast({
+        title: "Failed to load tracks",
+        description: errorInfo.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleTrackSelect = (track) => {
-    setCurrentTrack(track);
-    setIsPlaying(true);
+    playTrack(track, recentTracks);
+  };
+
+  const handleUploadComplete = (uploadedTracks) => {
+    setRecentTracks(prev => [...uploadedTracks, ...prev].slice(0, 9));
+    setShowUploadDialog(false);
+  };
+
+  const handleYouTubeTrackSelect = (track) => {
+    setRecentTracks(prev => [track, ...prev].slice(0, 9));
+    playTrack(track);
+    setShowYouTubeSearch(false);
   };
 
   const LibraryView = () => (
