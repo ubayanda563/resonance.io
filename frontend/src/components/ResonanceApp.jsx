@@ -345,7 +345,7 @@ const ResonanceApp = () => {
               onClick={() => setIsFullPlayer(true)}
             >
               <img 
-                src={currentTrack.artwork} 
+                src={currentTrack.artwork_url} 
                 alt={currentTrack.title}
                 className="w-full h-full object-cover"
               />
@@ -356,26 +356,27 @@ const ResonanceApp = () => {
             </div>
           </div>
 
-        <div className="flex items-center gap-4">
-          <button className="text-red-500 hover:text-red-400 transition-colors">
-            <div className="grid grid-cols-3 gap-1">
-              {[...Array(9)].map((_, i) => (
-                <div key={i} className="w-1 h-1 bg-current rounded-full" />
-              ))}
-            </div>
-          </button>
-          <button 
-            onClick={togglePlayPause}
-            className="text-white hover:text-gray-300 transition-colors"
-          >
-            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
-          </button>
-          <button className="text-white hover:text-gray-300 transition-colors">
-            <Search size={24} />
-          </button>
-          <button className="text-white hover:text-gray-300 transition-colors">
-            <Menu size={24} />
-          </button>
+          <div className="flex items-center gap-4">
+            <button className="text-red-500 hover:text-red-400 transition-colors">
+              <div className="grid grid-cols-3 gap-1">
+                {[...Array(9)].map((_, i) => (
+                  <div key={i} className="w-1 h-1 bg-current rounded-full" />
+                ))}
+              </div>
+            </button>
+            <button 
+              onClick={togglePlayPause}
+              className="text-white hover:text-gray-300 transition-colors"
+            >
+              {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
+            </button>
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <Search size={24} />
+            </button>
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <Menu size={24} />
+            </button>
+          </div>
         </div>
       )}
 
