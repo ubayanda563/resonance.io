@@ -4,9 +4,9 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime
 import logging
 
-from ..models import YouTubeSearchResult, Track, TrackCreate
-from ..services.youtube_service import YouTubeService
-from ..database import get_database
+from models import YouTubeSearchResult, Track, TrackCreate
+from services.youtube_service import YouTubeService
+from database import get_database
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/youtube", tags=["youtube"])
