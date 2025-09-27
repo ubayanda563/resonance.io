@@ -243,10 +243,16 @@ const ResonanceApp = () => {
 
           {/* Player Controls */}
           <div className="flex items-center gap-8 mb-8">
-            <button className="text-white hover:text-gray-300 transition-colors">
+            <button 
+              onClick={playPrevious}
+              className="text-white hover:text-gray-300 transition-colors"
+            >
               <SkipBack size={32} fill="currentColor" />
             </button>
-            <button className="text-white hover:text-gray-300 transition-colors">
+            <button 
+              onClick={() => seek(Math.max(0, currentTime - 10))}
+              className="text-white hover:text-gray-300 transition-colors"
+            >
               <SkipBack size={24} />
             </button>
             <button 
