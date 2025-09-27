@@ -250,7 +250,7 @@ const ResonanceApp = () => {
               <SkipBack size={24} />
             </button>
             <button 
-              onClick={handlePlayPause}
+              onClick={togglePlayPause}
               className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all"
             >
               {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" />}
