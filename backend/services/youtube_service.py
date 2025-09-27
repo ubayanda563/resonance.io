@@ -1,7 +1,7 @@
 import yt_dlp
 import re
 from typing import List, Optional, Dict
-from ..models import YouTubeSearchResult
+from models import YouTubeSearchResult
 import logging
 
 logger = logging.getLogger(__name__)
