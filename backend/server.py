@@ -64,7 +64,7 @@ async def shutdown_event():
     logger.info("Shutting down Resonance Music Player API...")
     
     # Close MongoDB connection
-    from .database import client
+    from database import client
     client.close()
     
     logger.info("Resonance Music Player API shut down successfully")
