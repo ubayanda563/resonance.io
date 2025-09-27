@@ -109,7 +109,9 @@ const ResonanceApp = () => {
       backgroundSize: 'cover',
       backgroundPosition: 'center'
     }}>
-      <div className="absolute inset-0 bg-black bg-opacity-60" />
+      <div className="absolute inset-0 bg-black bg-opacity-40" />
+      {/* Fading gradient covering 60% from bottom */}
+      <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black via-black/80 to-transparent" />
       <div className="relative h-full flex flex-col">
         {/* Top Controls */}
         <div className="flex justify-between items-center p-6">
