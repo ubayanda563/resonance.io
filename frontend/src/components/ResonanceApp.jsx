@@ -10,12 +10,27 @@ import { mockLibraryData } from '../data/mockData';
 
 const ResonanceApp = () => {
   const [currentView, setCurrentView] = useState('library');
-  const [currentTrack, setCurrentTrack] = useState(mockRecentlyAdded[0]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(24);
   const [isFullPlayer, setIsFullPlayer] = useState(false);
   const [githubAvatar, setGithubAvatar] = useState('');
-  const audioRef = useRef(null);
+  const [recentTracks, setRecentTracks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showYouTubeSearch, setShowYouTubeSearch] = useState(false);
+  const { toast } = useToast();
+  
+  // Audio player hook
+  const {
+    currentTrack,
+    isPlaying,
+    currentTime,
+    duration,
+    togglePlayPause,
+    playTrack,
+    formatTime,
+    seek,
+    playNext,
+    playPrevious,
+  } = useAudioPlayer();
 
   // Fetch GitHub avatar
   useEffect(() => {
