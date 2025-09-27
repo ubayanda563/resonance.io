@@ -337,23 +337,24 @@ const ResonanceApp = () => {
       {currentView === 'recently-added' && <RecentlyAddedView />}
 
       {/* Bottom Player Bar */}
-      <div className="bg-gray-900 p-4 flex items-center gap-4">
-        <div className="flex items-center gap-3 flex-1">
-          <div 
-            className="w-12 h-12 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform"
-            onClick={() => setIsFullPlayer(true)}
-          >
-            <img 
-              src={currentTrack.artwork} 
-              alt={currentTrack.title}
-              className="w-full h-full object-cover"
-            />
+      {currentTrack && (
+        <div className="bg-gray-900 p-4 flex items-center gap-4">
+          <div className="flex items-center gap-3 flex-1">
+            <div 
+              className="w-12 h-12 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+              onClick={() => setIsFullPlayer(true)}
+            >
+              <img 
+                src={currentTrack.artwork} 
+                alt={currentTrack.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-white font-medium text-sm truncate">{currentTrack.title}</h4>
+              <p className="text-blue-400 text-xs truncate">{currentTrack.artist}</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="text-white font-medium text-sm truncate">{currentTrack.title}</h4>
-            <p className="text-blue-400 text-xs truncate">{currentTrack.artist}</p>
-          </div>
-        </div>
 
         <div className="flex items-center gap-4">
           <button className="text-red-500 hover:text-red-400 transition-colors">
