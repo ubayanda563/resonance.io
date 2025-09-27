@@ -200,7 +200,7 @@ const ResonanceApp = () => {
 
   const FullPlayerView = () => (
     <div className="fixed inset-0 z-50" style={{
-      backgroundImage: `url(${currentTrack.artwork})`,
+      backgroundImage: `url(${currentTrack.artwork_url})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center'
     }}>
