@@ -1,0 +1,270 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Search, Menu, Heart, MoreVertical, ArrowLeft, Shuffle, Repeat } from 'lucide-react';
+import { mockLibraryData, mockRecentlyAdded } from '../data/mockData';
+
+const ResonanceApp = () => {
+  const [currentView, setCurrentView] = useState('library');
+  const [currentTrack, setCurrentTrack] = useState(mockRecentlyAdded[0]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(24);
+  const [isFullPlayer, setIsFullPlayer] = useState(false);
+  const [githubAvatar, setGithubAvatar] = useState('');
+  const audioRef = useRef(null);
+
+  // Fetch GitHub avatar
+  useEffect(() => {
+    fetch('https://api.github.com/users/Moodstlbn')
+      .then(res => res.json())
+      .then(data => setGithubAvatar(data.avatar_url))
+      .catch(() => setGithubAvatar('https://github.com/Moodstlbn.png'));
+  }, []);
+
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTrackSelect = (track) => {
+    setCurrentTrack(track);
+    setIsPlaying(true);
+  };
+
+  const LibraryView = () => (
+    <div className="flex-1 p-6">
+      <div className="grid grid-cols-2 gap-6">
+        {mockLibraryData.map((category, idx) => (
+          <div 
+            key={idx} 
+            className="flex items-center gap-4 cursor-pointer hover:bg-gray-800 p-3 rounded-lg transition-all duration-200"
+            onClick={() => category.id === 'recently-added' && setCurrentView('recently-added')}
+          >
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              category.color === 'red' ? 'bg-red-600' : 'bg-gray-600'
+            }`}>
+              {category.icon}
+            </div>
+            <div>
+              <h3 className="text-blue-400 font-medium text-lg">{category.title}</h3>
+              {category.subtitle && (
+                <p className="text-gray-400 text-sm">{category.subtitle}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const RecentlyAddedView = () => (
+    <div className="flex-1 p-6">
+      <div className="flex items-center gap-4 mb-6">
+        <button 
+          onClick={() => setCurrentView('library')}
+          className="text-red-500 hover:text-red-400 transition-colors"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <h2 className="text-blue-400 text-2xl font-medium">RECENTLY ADDED</h2>
+      </div>
+      
+      <div className="flex gap-4 mb-6">
+        <button className="text-red-500 hover:text-red-400 transition-colors">
+          <span className="text-lg">✕</span>
+        </button>
+        <button className="text-red-500 hover:text-red-400 transition-colors">
+          <Play size={20} fill="currentColor" />
+        </button>
+        <button className="text-orange-500 hover:text-orange-400 transition-colors">
+          <Search size={20} />
+        </button>
+        <div className="ml-auto">
+          <span className="text-blue-400 bg-gray-800 px-3 py-1 rounded text-sm">SELECT</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        {mockRecentlyAdded.map((track, idx) => (
+          <div 
+            key={idx} 
+            className="cursor-pointer hover:scale-105 transition-transform duration-200"
+            onClick={() => handleTrackSelect(track)}
+          >
+            <div className="aspect-square mb-3 overflow-hidden rounded-lg">
+              <img 
+                src={track.artwork} 
+                alt={track.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h4 className="text-blue-400 font-medium text-sm mb-1 truncate">{track.title}</h4>
+            <p className="text-gray-400 text-xs truncate">{track.artist}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const FullPlayerView = () => (
+    <div className="fixed inset-0 z-50" style={{
+      backgroundImage: `url(${currentTrack.artwork})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
+      <div className="absolute inset-0 bg-black bg-opacity-60" />
+      <div className="relative h-full flex flex-col">
+        {/* Top Controls */}
+        <div className="flex justify-between items-center p-6">
+          <button 
+            onClick={() => setIsFullPlayer(false)}
+            className="text-white hover:text-gray-300 transition-colors"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div className="flex gap-4">
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <Heart size={24} />
+            </button>
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <Menu size={24} />
+            </button>
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <MoreVertical size={24} />
+            </button>
+          </div>
+        </div>
+
+        {/* Center Content */}
+        <div className="flex-1 flex flex-col justify-center items-center px-6">
+          <div className="text-center mb-8">
+            <h1 className="text-white text-2xl font-bold mb-2">{currentTrack.title}</h1>
+            <p className="text-blue-400 text-lg">{currentTrack.artist}</p>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <span className="text-white bg-black bg-opacity-50 px-2 py-1 rounded text-sm">
+                {progress}/1280
+              </span>
+            </div>
+          </div>
+
+          {/* Player Controls */}
+          <div className="flex items-center gap-8 mb-8">
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <SkipBack size={32} fill="currentColor" />
+            </button>
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <SkipBack size={24} />
+            </button>
+            <button 
+              onClick={handlePlayPause}
+              className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all"
+            >
+              {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" />}
+            </button>
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <SkipForward size={24} />
+            </button>
+            <button className="text-white hover:text-gray-300 transition-colors">
+              <SkipForward size={32} fill="currentColor" />
+            </button>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="w-full max-w-md mb-4">
+            <div className="flex justify-between text-white text-sm mb-2">
+              <span>0:32</span>
+              <span>3:23</span>
+            </div>
+            <div className="relative h-1 bg-white bg-opacity-30 rounded-full">
+              <div 
+                className="absolute h-full bg-red-500 rounded-full transition-all duration-200"
+                style={{ width: `${(progress / 1280) * 100}%` }}
+              />
+              <div 
+                className="absolute w-3 h-3 bg-red-500 rounded-full top-1/2 transform -translate-y-1/2 transition-all duration-200"
+                style={{ left: `${(progress / 1280) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          <button className="text-white bg-black bg-opacity-50 px-4 py-2 rounded-full hover:bg-opacity-70 transition-all">
+            <span className="text-sm">QUEUE</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="h-screen bg-black text-white flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between p-6">
+        <div className="flex items-center gap-4">
+          {githubAvatar && (
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-400">
+              <img 
+                src={githubAvatar} 
+                alt="Resonance Logo" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          <h1 className="text-blue-400 text-3xl font-bold">RESONANCE</h1>
+        </div>
+        <div className="flex gap-2">
+          <div className="w-2 h-2 bg-red-500 rounded-full" />
+          <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+          <div className="w-2 h-2 bg-green-500 rounded-full" />
+        </div>
+      </div>
+
+      {/* Main Content */}
+      {currentView === 'library' && <LibraryView />}
+      {currentView === 'recently-added' && <RecentlyAddedView />}
+
+      {/* Bottom Player Bar */}
+      <div className="bg-gray-900 p-4 flex items-center gap-4">
+        <div className="flex items-center gap-3 flex-1">
+          <div 
+            className="w-12 h-12 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+            onClick={() => setIsFullPlayer(true)}
+          >
+            <img 
+              src={currentTrack.artwork} 
+              alt={currentTrack.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-white font-medium text-sm truncate">{currentTrack.title}</h4>
+            <p className="text-blue-400 text-xs truncate">{currentTrack.artist}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button className="text-red-500 hover:text-red-400 transition-colors">
+            <div className="grid grid-cols-3 gap-1">
+              {[...Array(9)].map((_, i) => (
+                <div key={i} className="w-1 h-1 bg-current rounded-full" />
+              ))}
+            </div>
+          </button>
+          <button 
+            onClick={handlePlayPause}
+            className="text-white hover:text-gray-300 transition-colors"
+          >
+            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
+          </button>
+          <button className="text-white hover:text-gray-300 transition-colors">
+            <Search size={24} />
+          </button>
+          <button className="text-white hover:text-gray-300 transition-colors">
+            <Menu size={24} />
+          </button>
+        </div>
+      </div>
+
+      {/* Full Player Overlay */}
+      {isFullPlayer && <FullPlayerView />}
+    </div>
+  );
+};
+
+export default ResonanceApp;
