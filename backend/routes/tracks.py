@@ -7,9 +7,9 @@ from datetime import datetime
 import os
 import logging
 
-from ..models import Track, TrackCreate, TrackUpdate, LibraryStats
-from ..services.file_service import FileService
-from ..database import get_database
+from models import Track, TrackCreate, TrackUpdate, LibraryStats
+from services.file_service import FileService
+from database import get_database
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/tracks", tags=["tracks"])
