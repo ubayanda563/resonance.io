@@ -158,7 +158,7 @@ const ResonanceApp = () => {
           >
             <div className="aspect-square mb-3 overflow-hidden rounded-lg">
               <img 
-                src={track.artwork} 
+                src={track.artwork_url} 
                 alt={track.title}
                 className="w-full h-full object-cover"
               />
