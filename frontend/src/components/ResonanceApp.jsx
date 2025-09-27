@@ -352,7 +352,7 @@ const ResonanceApp = () => {
             </div>
           </button>
           <button 
-            onClick={handlePlayPause}
+            onClick={togglePlayPause}
             className="text-white hover:text-gray-300 transition-colors"
           >
             {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
