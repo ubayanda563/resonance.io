@@ -266,17 +266,25 @@ const ResonanceApp = () => {
           {/* Progress Bar */}
           <div className="w-full max-w-md mb-4">
             <div className="flex justify-between text-white text-sm mb-2">
-              <span>0:32</span>
-              <span>3:23</span>
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
             </div>
-            <div className="relative h-1 bg-white bg-opacity-30 rounded-full">
+            <div 
+              className="relative h-1 bg-white bg-opacity-30 rounded-full cursor-pointer"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const newTime = (clickX / rect.width) * duration;
+                seek(newTime);
+              }}
+            >
               <div 
                 className="absolute h-full bg-red-500 rounded-full transition-all duration-200"
-                style={{ width: `${(progress / 1280) * 100}%` }}
+                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
               />
               <div 
                 className="absolute w-3 h-3 bg-red-500 rounded-full top-1/2 transform -translate-y-1/2 transition-all duration-200"
-                style={{ left: `${(progress / 1280) * 100}%` }}
+                style={{ left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
               />
             </div>
           </div>
