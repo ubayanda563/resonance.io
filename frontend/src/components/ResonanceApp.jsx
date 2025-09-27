@@ -377,7 +377,6 @@ const ResonanceApp = () => {
             <Menu size={24} />
           </button>
         </div>
-        </div>
       )}
 
       {/* Full Player Overlay */}
