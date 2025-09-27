@@ -236,7 +236,7 @@ const ResonanceApp = () => {
             <p className="text-blue-400 text-lg">{currentTrack.artist}</p>
             <div className="flex items-center justify-center gap-2 mt-2">
               <span className="text-white bg-black bg-opacity-50 px-2 py-1 rounded text-sm">
-                {progress}/1280
+                {formatTime(currentTime)}/{formatTime(duration)}
               </span>
             </div>
           </div>
