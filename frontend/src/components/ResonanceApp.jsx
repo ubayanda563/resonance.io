@@ -377,10 +377,11 @@ const ResonanceApp = () => {
             <Menu size={24} />
           </button>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Full Player Overlay */}
-      {isFullPlayer && <FullPlayerView />}
+      {isFullPlayer && currentTrack && <FullPlayerView />}
     </div>
   );
 };
