@@ -8,8 +8,8 @@ import logging
 import asyncio
 
 # Import routes
-from .routes import tracks, youtube, artwork
-from .database import create_indexes
+from routes import tracks, youtube, artwork
+from database import create_indexes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
