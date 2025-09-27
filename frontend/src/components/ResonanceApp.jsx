@@ -116,18 +116,28 @@ const ResonanceApp = () => {
       </div>
       
       <div className="flex gap-4 mb-6">
-        <button className="text-red-500 hover:text-red-400 transition-colors">
-          <span className="text-lg">✕</span>
+        <button 
+          onClick={() => setShowUploadDialog(true)}
+          className="text-blue-500 hover:text-blue-400 transition-colors flex items-center gap-2"
+          title="Upload Music Files"
+        >
+          <Upload size={20} />
         </button>
-        <button className="text-red-500 hover:text-red-400 transition-colors">
-          <Play size={20} fill="currentColor" />
-        </button>
-        <button className="text-orange-500 hover:text-orange-400 transition-colors">
+        <button 
+          onClick={() => setShowYouTubeSearch(true)}
+          className="text-red-500 hover:text-red-400 transition-colors flex items-center gap-2"
+          title="Search YouTube Music"
+        >
           <Search size={20} />
         </button>
-        <div className="ml-auto">
-          <span className="text-blue-400 bg-gray-800 px-3 py-1 rounded text-sm">SELECT</span>
-        </div>
+        <button 
+          onClick={() => recentTracks.length > 0 && handleTrackSelect(recentTracks[0])}
+          className="text-green-500 hover:text-green-400 transition-colors"
+          disabled={recentTracks.length === 0}
+          title="Play All"
+        >
+          <Play size={20} fill="currentColor" />
+        </button>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
