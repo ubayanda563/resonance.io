@@ -166,7 +166,34 @@ const ResonanceApp = () => {
             <h4 className="text-blue-400 font-medium text-sm mb-1 truncate">{track.title}</h4>
             <p className="text-gray-400 text-xs truncate">{track.artist}</p>
           </div>
-        ))}
+        ))
+        ) : (
+          <div className="col-span-3 text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-700 rounded-full flex items-center justify-center">
+                <Upload size={32} />
+              </div>
+              <p className="text-lg mb-2">No music in your library yet</p>
+              <p className="text-sm mb-6">Upload your music files or search YouTube to get started</p>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setShowUploadDialog(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <Upload size={16} />
+                  Upload Files
+                </button>
+                <button
+                  onClick={() => setShowYouTubeSearch(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <Search size={16} />
+                  Search YouTube
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
