@@ -261,10 +261,16 @@ const ResonanceApp = () => {
             >
               {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" />}
             </button>
-            <button className="text-white hover:text-gray-300 transition-colors">
+            <button 
+              onClick={() => seek(Math.min(duration, currentTime + 10))}
+              className="text-white hover:text-gray-300 transition-colors"
+            >
               <SkipForward size={24} />
             </button>
-            <button className="text-white hover:text-gray-300 transition-colors">
+            <button 
+              onClick={playNext}
+              className="text-white hover:text-gray-300 transition-colors"
+            >
               <SkipForward size={32} fill="currentColor" />
             </button>
           </div>
