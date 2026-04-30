@@ -30,8 +30,8 @@ class ResonanceMusicPlayerTester:
         except Exception as e:
             print(f"Warning: Could not read frontend .env file: {e}")
         
-        # Fallback to default
-        return "https://soundwave-fusion.preview.emergentagent.com"
+        # Fallback to local development server
+        return "http://localhost:8001"
     
     def log_test(self, test_name: str, success: bool, details: str = "", response_time: float = 0):
         """Log test results"""

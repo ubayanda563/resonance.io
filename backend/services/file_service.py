@@ -14,7 +14,12 @@ logger = logging.getLogger(__name__)
 
 
 class FileService:
-    def __init__(self, upload_dir: str = "/app/backend/uploads"):
+    def __init__(self, upload_dir: str = None):
+        if upload_dir is None:
+            # Use relative path from the backend directory
+            backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            upload_dir = os.path.join(backend_dir, "uploads")
+        
         self.upload_dir = upload_dir
         self.audio_dir = os.path.join(upload_dir, "audio")
         self.artwork_dir = os.path.join(upload_dir, "artwork")
