@@ -16,7 +16,7 @@ class TrackSource(str, Enum):
 
 
 class Track(BaseModel):
-    id: Optional[str] = Field(default=None, alias="_id")
+    id: Optional[str] = None
     title: str
     artist: str
     album: Optional[str] = None
@@ -31,9 +31,9 @@ class Track(BaseModel):
     source: TrackSource = TrackSource.LOCAL
     file_size: Optional[int] = None  # in bytes
     format: Optional[str] = None  # mp3, flac, etc.
+    mime_type: Optional[str] = None
 
     class Config:
-        populate_by_name = True
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }

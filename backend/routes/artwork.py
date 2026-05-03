@@ -9,16 +9,17 @@ router = APIRouter(prefix="/artwork", tags=["artwork"])
 ARTWORK_DIR = "/app/backend/uploads/artwork"
 
 
-@router.get("/{filename}")
+@router.get("/{filename:path}")
 async def get_artwork(filename: str):
     """Serve artwork files"""
     try:
-        # Security check - prevent directory traversal
-        if ".." in filename or "/" in filename:
+        # Resolve the requested artwork file path and prevent directory traversal
+        requested_path = os.path.abspath(os.path.join(ARTWORK_DIR, filename))
+        artwork_dir_path = os.path.abspath(ARTWORK_DIR)
+        if not requested_path.startswith(artwork_dir_path + os.sep):
             raise HTTPException(status_code=400, detail="Invalid filename")
-        
-        file_path = os.path.join(ARTWORK_DIR, filename)
-        
+
+        file_path = requested_path
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail="Artwork not found")
         

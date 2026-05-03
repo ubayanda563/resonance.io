@@ -1,6 +1,7 @@
 import os
 import uuid
 import hashlib
+import mimetypes
 from typing import Optional, Dict, Any
 from fastapi import UploadFile
 from mutagen import File as MutagenFile
@@ -41,9 +42,11 @@ class FileService:
             with open(file_path, "wb") as f:
                 f.write(content)
             
-            # Extract metadata
+                # Extract metadata and verify audio format
             metadata = self._extract_metadata(file_path)
-            
+            if metadata is None:
+                raise ValueError("Unsupported audio format")
+
             # Extract artwork if available
             artwork_url = await self._extract_artwork(file_path, unique_filename)
             
@@ -53,6 +56,7 @@ class FileService:
                 "original_filename": file.filename,
                 "file_size": len(content),
                 "format": file_extension[1:],  # Remove the dot
+                "mime_type": self._guess_mime_type(file_path),
                 "metadata": metadata,
                 "artwork_url": artwork_url
             }
@@ -68,7 +72,7 @@ class FileService:
         try:
             audio_file = MutagenFile(file_path)
             if audio_file is None:
-                return {}
+                return None
             
             metadata = {
                 "title": self._get_tag(audio_file, ['TIT2', 'TITLE', '\xa9nam']),
@@ -149,6 +153,11 @@ class FileService:
     def _get_default_artwork(self) -> str:
         """Return default artwork URL"""
         return "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&crop=center"
+
+    def _guess_mime_type(self, file_path: str) -> str:
+        """Guess MIME type based on file extension"""
+        mime_type, _ = mimetypes.guess_type(file_path)
+        return mime_type or 'application/octet-stream'
     
     def delete_file(self, file_path: str) -> bool:
         """Delete a file from the filesystem"""

@@ -69,7 +69,8 @@ async def add_youtube_track(
         # Check if track already exists
         existing_track = await db.tracks.find_one({"youtube_id": youtube_id})
         if existing_track:
-            existing_track["_id"] = str(existing_track["_id"])
+            existing_track["id"] = str(existing_track["_id"])
+            del existing_track["_id"]
             return Track(**existing_track)
         
         # Get track info from YouTube
@@ -92,7 +93,7 @@ async def add_youtube_track(
         
         # Insert into database
         result = await db.tracks.insert_one(track_data)
-        track_data["_id"] = str(result.inserted_id)
+        track_data["id"] = str(result.inserted_id)
         
         return Track(**track_data)
     except HTTPException:

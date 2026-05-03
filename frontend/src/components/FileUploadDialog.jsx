@@ -6,11 +6,12 @@ import { Upload, X, Music, CheckCircle, AlertCircle } from 'lucide-react';
 import { trackAPI, handleApiError } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
-const FileUploadDialog = ({ isOpen, onClose, onUploadComplete }) => {
+const FileUploadDialog = ({ isOpen, onClose, onUploadComplete, onLocalPlay }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const localFileInputRef = React.useRef(null);
   const { toast } = useToast();
 
   const handleDragOver = useCallback((e) => {
@@ -30,7 +31,7 @@ const FileUploadDialog = ({ isOpen, onClose, onUploadComplete }) => {
     const files = Array.from(e.dataTransfer.files);
     const audioFiles = files.filter(file => 
       file.type.startsWith('audio/') || 
-      /\.(mp3|flac|m4a|aac|ogg|wav)$/i.test(file.name)
+      /\.(mp3|flac|m4a|aac|ogg|wav|webm|opus|aiff|alac)$/i.test(file.name)
     );
     
     if (audioFiles.length > 0) {
@@ -47,6 +48,44 @@ const FileUploadDialog = ({ isOpen, onClose, onUploadComplete }) => {
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     handleFileUpload(files);
+  };
+
+  const handleLocalFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    const audioFiles = files.filter(file => 
+      file.type.startsWith('audio/') || /\.(mp3|flac|m4a|aac|ogg|wav|webm|opus|aiff|alac)$/i.test(file.name)
+    );
+
+    if (audioFiles.length === 0) {
+      toast({
+        title: "Invalid file",
+        description: "Please select a supported audio file",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const file = audioFiles[0];
+    const track = {
+      id: `browser-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      title: file.name.replace(/\.[^/.]+$/, ''),
+      artist: 'Local File',
+      album: null,
+      duration: 0,
+      file_size: file.size,
+      format: file.type || file.name.split('.').pop().toLowerCase(),
+      artwork_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&crop=center',
+      source: 'browser',
+      file_url: URL.createObjectURL(file)
+    };
+
+    if (onLocalPlay) {
+      onLocalPlay(track);
+    }
+
+    if (localFileInputRef.current) {
+      localFileInputRef.current.value = null;
+    }
   };
 
   const handleFileUpload = async (files) => {
@@ -129,20 +168,42 @@ const FileUploadDialog = ({ isOpen, onClose, onUploadComplete }) => {
               </p>
               <input
                 type="file"
-                accept="audio/*,.mp3,.flac,.m4a,.aac,.ogg,.wav"
+                accept="audio/*"
                 multiple
                 onChange={handleFileSelect}
                 className="hidden"
                 id="file-upload"
               />
-              <Button
-                asChild
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  Choose Files
-                </label>
-              </Button>
+              <input
+                ref={localFileInputRef}
+                type="file"
+                accept="audio/*"
+                onChange={handleLocalFileSelect}
+                className="hidden"
+                id="local-file-upload"
+              />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button
+                  asChild
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    Choose Files
+                  </label>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                >
+                  <label htmlFor="local-file-upload" className="cursor-pointer">
+                    Play Locally
+                  </label>
+                </Button>
+              </div>
+              <p className="text-gray-400 text-sm mt-4">
+                Supports browser-playable audio formats. Local playback works immediately without upload.
+              </p>
             </div>
           )}
 

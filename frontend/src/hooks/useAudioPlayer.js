@@ -6,7 +6,7 @@ export const useAudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1.0);
+  const [volume, setVolume] = useState(75);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [queue, setQueue] = useState([]);
@@ -73,9 +73,14 @@ export const useAudioPlayer = () => {
   // Update audio volume
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = volume;
+      audioRef.current.volume = Math.min(Math.max(volume / 100, 0), 1);
     }
   }, [volume]);
+
+  const getTrackKey = useCallback((track) => {
+    if (!track) return null;
+    return track.id || track.file_url || track.title;
+  }, []);
 
   const loadTrack = useCallback(async (track) => {
     if (!audioRef.current) return;
@@ -90,14 +95,18 @@ export const useAudioPlayer = () => {
         audioUrl = trackAPI.getStreamUrl(track.id);
       } else if (track.source === 'youtube') {
         audioUrl = await youtubeAPI.getStreamUrl(track.youtube_id);
+      } else if (track.source === 'browser' && track.file_url) {
+        audioUrl = track.file_url;
+      } else if (track.file_url) {
+        audioUrl = track.file_url;
       }
 
       if (audioUrl) {
         audioRef.current.src = audioUrl;
         setCurrentTrack(track);
         
-        // Load the audio
-        await audioRef.current.load();
+        // Load the audio and allow event handlers to update duration/state
+        audioRef.current.load();
       } else {
         throw new Error('No audio URL available');
       }
@@ -167,12 +176,13 @@ export const useAudioPlayer = () => {
     
     if (trackQueue.length > 0) {
       setQueue(trackQueue);
-      const index = trackQueue.findIndex(t => t.id === track.id);
+      const trackKey = getTrackKey(track);
+      const index = trackQueue.findIndex((t) => getTrackKey(t) === trackKey);
       setCurrentIndex(index >= 0 ? index : 0);
     }
     
     await play();
-  }, [loadTrack, play]);
+  }, [getTrackKey, loadTrack, play]);
 
   const playTrackFromQueue = useCallback(async (index) => {
     if (index >= 0 && index < queue.length) {

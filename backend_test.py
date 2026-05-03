@@ -10,6 +10,7 @@ import os
 import time
 from typing import Dict, Any, Optional
 from pathlib import Path
+from urllib.parse import quote
 
 class ResonanceMusicPlayerTester:
     def __init__(self):
@@ -341,7 +342,8 @@ class ResonanceMusicPlayerTester:
         # Test directory traversal protection
         try:
             start_time = time.time()
-            response = self.session.get(f"{self.api_url}/artwork/../../../etc/passwd", timeout=10)
+            traversal_path = "/".join(part.replace('.', '%2E') for part in "../../../etc/passwd".split("/"))
+            response = self.session.get(f"{self.api_url}/artwork/{traversal_path}", timeout=10)
             response_time = time.time() - start_time
             
             if response.status_code == 400:

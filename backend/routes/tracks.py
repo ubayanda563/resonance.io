@@ -23,16 +23,10 @@ async def upload_track(
 ):
     """Upload a local audio file"""
     try:
-        # Validate file type
-        allowed_extensions = ['.mp3', '.flac', '.m4a', '.aac', '.ogg', '.wav']
-        file_extension = os.path.splitext(file.filename)[1].lower()
-        
-        if file_extension not in allowed_extensions:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
-            )
-        
+        # Validate file type using browser-provided metadata and mutagen detection
+        if file.content_type and not file.content_type.startswith('audio/'):
+            raise HTTPException(status_code=400, detail="Only audio files are allowed")
+
         # Save file and extract metadata
         file_info = await file_service.save_audio_file(file)
         metadata = file_info["metadata"]
@@ -48,17 +42,21 @@ async def upload_track(
             "source": "local",
             "file_size": file_info["file_size"],
             "format": file_info["format"],
+            "mime_type": file_info.get("mime_type"),
             "upload_date": datetime.utcnow(),
             "play_count": 0
         }
         
         # Insert into database
         result = await db.tracks.insert_one(track_data)
-        track_data["_id"] = str(result.inserted_id)
+        track_data["id"] = str(result.inserted_id)
         
         return Track(**track_data)
     except HTTPException:
         raise
+    except ValueError as e:
+        logger.warning(f"Invalid audio file: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Error uploading track: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to upload track")
@@ -92,11 +90,20 @@ async def get_tracks(
         cursor = db.tracks.find(query).sort(sort_spec).skip(offset).limit(limit)
         tracks = await cursor.to_list(length=limit)
         
-        # Convert ObjectId to string
+        # Convert ObjectId to string and normalize to 'id' field
+        result_tracks = []
         for track in tracks:
-            track["_id"] = str(track["_id"])
+            if "_id" in track:
+                track["id"] = str(track["_id"])  # Add 'id' field
+                del track["_id"]  # Remove '_id' field
+            result_tracks.append(track)
         
-        return [Track(**track) for track in tracks]
+        try:
+            return [Track(**track) for track in result_tracks]
+        except Exception as e:
+            # If Track instantiation fails, log the track data for debugging
+            logger.error(f"Failed to create Track instances: {str(e)}, Track data: {result_tracks[0] if result_tracks else 'empty'}")
+            raise
     except Exception as e:
         logger.error(f"Error getting tracks: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get tracks")
@@ -112,10 +119,15 @@ async def get_recent_tracks(
         cursor = db.tracks.find().sort("upload_date", -1).limit(limit)
         tracks = await cursor.to_list(length=limit)
         
+        # Convert _id to id field
+        result_tracks = []
         for track in tracks:
-            track["_id"] = str(track["_id"])
+            if "_id" in track:
+                track["id"] = str(track["_id"])
+                del track["_id"]
+            result_tracks.append(track)
         
-        return [Track(**track) for track in tracks]
+        return [Track(**track) for track in result_tracks]
     except Exception as e:
         logger.error(f"Error getting recent tracks: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get recent tracks")
@@ -187,7 +199,8 @@ async def get_track(
         if not track:
             raise HTTPException(status_code=404, detail="Track not found")
         
-        track["_id"] = str(track["_id"])
+        track["id"] = str(track["_id"])
+        del track["_id"]
         return Track(**track)
     except HTTPException:
         raise
@@ -224,7 +237,8 @@ async def update_track(
         
         # Return updated track
         updated_track = await db.tracks.find_one({"_id": ObjectId(track_id)})
-        updated_track["_id"] = str(updated_track["_id"])
+        updated_track["id"] = str(updated_track["_id"])
+        del updated_track["_id"]
         
         return Track(**updated_track)
     except HTTPException:
@@ -293,8 +307,8 @@ async def stream_track(
         
         return FileResponse(
             path=file_path,
-            filename=track["title"] + "." + track.get("format", "mp3"),
-            media_type="audio/mpeg"
+            filename=f"{track['title']}.{track.get('format') or 'bin'}",
+            media_type=track.get("mime_type") or "application/octet-stream"
         )
     except HTTPException:
         raise
